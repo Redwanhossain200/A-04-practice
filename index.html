@@ -50,7 +50,7 @@
     }
 
     .job-card {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s;
       animation: fadeIn 0.5s ease backwards;
     }
 
@@ -297,6 +297,12 @@
   <script>
     let currentTab = 'all';
 
+    // ১. অ্যাপ লোড হওয়ার সময় কনসোল মেসেজ
+    window.onload = function () {
+      console.log("Welcome! Your Job Tracker is ready.");
+      updateCounts();
+    };
+
     function updateCounts() {
       const allCards = document.querySelectorAll('.job-card');
       const interviewCount = document.querySelectorAll('.job-card[data-status="interview"]').length;
@@ -309,6 +315,9 @@
       let visibleCount = 0;
       allCards.forEach(card => { if (card.style.display !== 'none') visibleCount++; });
       document.getElementById('badgeCount').innerText = `${visibleCount} jobs`;
+
+      // ২. কাউন্ট আপডেট হলে কনসোলে জানানো
+      console.log("Stats update: Total=" + allCards.length + ", Interview=" + interviewCount + ", Rejected=" + rejectedCount);
 
       const empty = document.getElementById('emptyView');
       const list = document.getElementById('jobList');
@@ -323,7 +332,8 @@
 
     function setTab(tab) {
       currentTab = tab;
-      console.log("Tab changed to: " + tab);
+      // ৩. ট্যাব পরিবর্তনের ইভেন্ট
+      console.log("Switch Tab: " + tab.toUpperCase());
 
       document.querySelectorAll('button[id^="tab-"]').forEach(btn => btn.classList.remove('active-tab'));
       document.getElementById(`tab-${tab}`).classList.add('active-tab');
@@ -340,7 +350,8 @@
       const oldStatus = card.getAttribute('data-status');
       const finalStatus = (oldStatus === newStatus) ? 'none' : newStatus;
 
-      console.log("Job status updated! ID: " + id + " | New Status: " + finalStatus);
+      // ৪. স্ট্যাটাস চেঞ্জ ইভেন্ট
+      console.log("Success! Job " + id + " moved to " + finalStatus);
 
       card.setAttribute('data-status', finalStatus);
       const label = card.querySelector('.status-badge');
@@ -353,13 +364,23 @@
     }
 
     function removeJob(id) {
-      const card = document.getElementById(id);
-      console.log("Job removed: " + id);
+      // ৫. কনফার্মেশন প্রম্পট (বিগিনারদের জন্য খুব জরুরি)
+      const confirmDelete = confirm("Are you sure you want to delete this job?");
 
-      card.classList.add('removing');
-      setTimeout(() => { card.remove(); updateCounts(); }, 300);
+      if (confirmDelete) {
+        const card = document.getElementById(id);
+        console.log("Deleting record: " + id);
+
+        card.classList.add('removing');
+        setTimeout(() => {
+          card.remove();
+          updateCounts();
+          console.log("Record " + id + " has been permanently removed.");
+        }, 300);
+      } else {
+        console.log("Delete cancelled by user.");
+      }
     }
-
   </script>
 </body>
 
