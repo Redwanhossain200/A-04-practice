@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Tracker</title>
+  <!-- Google fonts  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+
+  <!-- tailwind & daisy CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- Font Awesome CDN  -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    body {
+      font-family: "Geist", sans-serif;
+      background-color: #f8fafc;
+      color: #001f3f;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .active-tab {
+      background-color: #3b82f6 !important;
+      color: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .active-green {
+      background-color: #10b981 !important;
+      color: white !important;
+      border-color: #10b981 !important;
+    }
+
+    .active-red {
+      background-color: #ef4444 !important;
+      color: white !important;
+      border-color: #ef4444 !important;
+    }
+
+    .job-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeIn 0.5s ease backwards;
+    }
+
+    .job-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .removing {
+      opacity: 0;
+      transform: scale(0.9) translateY(-10px);
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body class="p-5 md:p-10">
+
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-[32px] font-bold mb-7">Job Application Tracker</h1>
+
+    <div class="grid grid-cols-3 md:grid-cols-3 gap-6 mb-12 sticky top-0 z-10 bg-[#f8fafc] pt-3">
+      <div class="bg-white p-5 rounded-lg border border-white shadow-sm">
+        <p class="text-gray-500 font-medium text-sm">Total</p>
+        <p id="totalCount" class="text-3xl font-bold mt-2">8</p>
+      </div>
+      <div class="bg-white p-5 rounded-lg border border-white shadow-sm">
+        <p class="text-gray-500 font-medium text-sm">Interview</p>
+        <p id="interviewCount" class="text-3xl font-bold text-[#10b981] mt-2">0</p>
+      </div>
+      <div class="bg-white p-5 rounded-lg border border-white shadow-sm">
+        <p class="text-gray-500 font-medium text-sm">Rejected</p>
+        <p id="rejectedCount" class="text-3xl font-bold text-[#ef4444] mt-2">0</p>
+      </div>
+    </div>
+
+    <hr class="border border-[#E6E7E9] mb-8">
+
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-semibold">Available Jobs</h2>
+      <span id="badgeCount" class="text-gray-400 font-medium text-[16px]">8 jobs</span>
+    </div>
+
+    <div class="flex gap-2 mb-8">
+      <button onclick="setTab('all')" id="tab-all"
+        class="px-8 py-2 rounded-md bg-white border-none text-sm font-semibold active-tab cursor-pointer">All</button>
+      <button onclick="setTab('interview')" id="tab-interview"
+        class="px-8 py-2 rounded-md bg-white border-none text-sm font-semibold text-gray-500 cursor-pointer">Interview</button>
+      <button onclick="setTab('rejected')" id="tab-rejected"
+        class="px-8 py-2 rounded-md bg-white border-none text-sm font-semibold text-gray-500 cursor-pointer">Rejected</button>
+    </div>
+
+    <div id="jobList" class="space-y-7">
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-1">
+        <button onclick="removeJob('job-1')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">Mobile First Corp</h3>
+        <p class="text-gray-600 font-medium">React Native Developer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">Remote • Full-time • $130,000 - $175,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Build cross-platform mobile applications using React Native. Work on
+          products used by millions of users worldwide.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-1', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-1', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-2">
+        <button onclick="removeJob('job-2')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">WebFlow Agency</h3>
+        <p class="text-gray-600 font-medium">Web Designer & Developer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">Los Angeles, CA • Part-time • $80,000 - $120,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Create stunning web experiences for high-profile clients. Must have
+          portfolio and experience with modern web design trends.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-2', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-2', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-3">
+        <button onclick="removeJob('job-3')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">DataViz Solutions</h3>
+        <p class="text-gray-600 font-medium">Data Visualization Specialist</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">Boston, MA • Full-time • $125,000 - $165,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Transform complex data into compelling visualizations. Required skills:
+          D3.js, React, and strong analytical thinking.
+        </p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-3', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-3', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-4">
+        <button onclick="removeJob('job-4')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">CloudFirst Inc</h3>
+        <p class="text-gray-600 font-medium">Backend Developer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">Seattle, WA • Full-time • $140,000 - $190,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Design and maintain scalable backend systems using Python and AWS. Work
+          with modern DevOps practices and cloud infrastructure.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-4', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-4', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-5">
+        <button onclick="removeJob('job-5')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">Innovation Labs</h3>
+        <p class="text-gray-600 font-medium">UI/UX Engineer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">Austin, TX • Full-time • $110,000 - $150,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Create beautiful and functional user interfaces for our suite of products.
+          Strong design skills and frontend development expertise required.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-5', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-5', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-6">
+        <button onclick="removeJob('job-6')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">MegaCorp Solutions</h3>
+        <p class="text-gray-600 font-medium">JavaScript Developer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">New York, NY • Full-time • $130,000 - $170,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Build enterprise applications with JavaScript and modern frameworks. We
+          offer competitive compensation, health insurance, and professional development<br>opportunities.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-6', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-6', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-7">
+        <button onclick="removeJob('job-7')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">StartupXYZ</h3>
+        <p class="text-gray-600 font-medium">Full Stack Engineer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">Remote • Full-time • $120,000 - $160,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">Join our fast-growing startup and work on our core platform. Experience
+          with Node.js and React required. Great benefits and equity package included.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-7', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-7', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+
+      <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" data-status="none"
+        id="job-8">
+        <button onclick="removeJob('job-8')"
+          class="absolute top-6 right-6 text-black hover:text-red-500 text-xl p-[10px] cursor-pointer rounded-full bg-gray-100"><i
+            class="fa-regular fa-trash-can"></i></button>
+        <h3 class="text-xl font-bold">TechCorp Industries</h3>
+        <p class="text-gray-600 font-medium">Senior Frontend Developer</p>
+        <p class="text-gray-400 text-sm mt-1 mb-3">San Francisco, CA • Full-time • $150,000 - $185,000</p>
+        <span
+          class="status-badge inline-block bg-blue-50 text-blue-600 text-[11px] font-bold px-3 py-2 rounded mb-4">NOT
+          APPLIED</span>
+        <p class="text-gray-500 text-sm mb-6">We are looking for an experienced Frontend Developer to build scalable web
+          applications using React and TypeScript. You will work with a talented team on cutting-<br>edge projects.</p>
+        <div class="flex gap-3">
+          <button onclick="changeStatus('job-8', 'interview')"
+            class="btn-int px-3 py-2 border border-[#10b981] text-[#10b981] rounded-md text-xs font-bold hover:bg-green-50 cursor-pointer">INTERVIEW</button>
+          <button onclick="changeStatus('job-8', 'rejected')"
+            class="btn-rej px-3 py-2 border border-[#ef4444] text-[#ef4444] rounded-md text-xs font-bold hover:bg-red-50 cursor-pointer">REJECTED</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="emptyView"
+      class="hidden flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-100">
+      <img src="./jobs.png" alt="" class="w-20 mb-4">
+      <h3 class="text-2xl font-bold">No jobs available</h3>
+      <p class="text-gray-400 mt-2">Check back soon for new job opportunities</p>
+    </div>
+  </div>
+
+  <script>
+    let currentTab = 'all';
+
+    function updateCounts() {
+      const allCards = document.querySelectorAll('.job-card');
+      const interviewCount = document.querySelectorAll('.job-card[data-status="interview"]').length;
+      const rejectedCount = document.querySelectorAll('.job-card[data-status="rejected"]').length;
+
+      document.getElementById('totalCount').innerText = allCards.length;
+      document.getElementById('interviewCount').innerText = interviewCount;
+      document.getElementById('rejectedCount').innerText = rejectedCount;
+
+      let visibleCount = 0;
+      allCards.forEach(card => { if (card.style.display !== 'none') visibleCount++; });
+      document.getElementById('badgeCount').innerText = `${visibleCount} jobs`;
+
+      const empty = document.getElementById('emptyView');
+      const list = document.getElementById('jobList');
+      if (visibleCount === 0) {
+        empty.classList.remove('hidden');
+        list.classList.add('hidden');
+      } else {
+        empty.classList.add('hidden');
+        list.classList.remove('hidden');
+      }
+    }
+
+    function setTab(tab) {
+      currentTab = tab;
+      console.log("Tab changed to: " + tab);
+
+      document.querySelectorAll('button[id^="tab-"]').forEach(btn => btn.classList.remove('active-tab'));
+      document.getElementById(`tab-${tab}`).classList.add('active-tab');
+
+      document.querySelectorAll('.job-card').forEach(card => {
+        const status = card.getAttribute('data-status');
+        card.style.display = (tab === 'all' || status === tab) ? 'block' : 'none';
+      });
+      updateCounts();
+    }
+
+    function changeStatus(id, newStatus) {
+      const card = document.getElementById(id);
+      const oldStatus = card.getAttribute('data-status');
+      const finalStatus = (oldStatus === newStatus) ? 'none' : newStatus;
+
+      console.log("Job status updated! ID: " + id + " | New Status: " + finalStatus);
+
+      card.setAttribute('data-status', finalStatus);
+      const label = card.querySelector('.status-badge');
+      label.innerText = finalStatus === 'none' ? 'NOT APPLIED' : finalStatus.toUpperCase();
+
+      card.querySelector('.btn-int').classList.toggle('active-green', finalStatus === 'interview');
+      card.querySelector('.btn-rej').classList.toggle('active-red', finalStatus === 'rejected');
+
+      setTab(currentTab);
+    }
+
+    function removeJob(id) {
+      const card = document.getElementById(id);
+      console.log("Job removed: " + id);
+
+      card.classList.add('removing');
+      setTimeout(() => { card.remove(); updateCounts(); }, 300);
+    }
+
+  </script>
+</body>
+
+</html>
