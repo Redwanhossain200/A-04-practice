@@ -6,50 +6,82 @@ window.onload = function () {
 };
 
 function updateCounts() {
-  const allCards = document.querySelectorAll('.job-card');
-  const interviewCount = document.querySelectorAll('.job-card[data-status="interview"]').length;
-  const rejectedCount = document.querySelectorAll('.job-card[data-status="rejected"]').length;
 
-  document.getElementById('totalCount').innerText = allCards.length;
-  document.getElementById('interviewCount').innerText = interviewCount;
-  document.getElementById('rejectedCount').innerText = rejectedCount;
+  const cards = document.querySelectorAll('.job-card');
 
-  let visibleCount = 0;
-  allCards.forEach(card => { if (window.getComputedStyle(card).display !== 'none') visibleCount++; });
-  document.getElementById('badgeCount').innerText = `${visibleCount} jobs`;
+  let total = cards.length;
+  let interview = 0;
+  let rejected = 0;
+  let visible = 0;
 
-  console.log("Update: Total=" + allCards.length + ", Interview=" + interviewCount + ", Rejected=" + rejectedCount);
+  cards.forEach(function (card) {
+
+    const status = card.getAttribute('data-status');
+    if (status === 'interview') interview++;
+    if (status === 'rejected') rejected++;
+    if (card.style.display !== 'none') visible++;
+  });
+
+  document.getElementById('totalCount').innerText = total;
+  document.getElementById('interviewCount').innerText = interview;
+  document.getElementById('rejectedCount').innerText = rejected;
+  document.getElementById('badgeCount').innerText = visible + " jobs";
 
   const noData = document.getElementById('no-data');
   const list = document.getElementById('jobList');
-  if (visibleCount === 0) {
+
+  if (visible === 0) {
     noData.classList.remove('hidden');
     list.classList.add('hidden');
   } else {
     noData.classList.add('hidden');
     list.classList.remove('hidden');
   }
+  console.log("Update: Total=" + total + ", Interview=" + interview + ", Rejected=" + rejected);
 }
 
 function newTab(tab) {
+
   currentTab = tab;
   console.log("Current Tab: " + tab.toUpperCase());
 
-  document.querySelectorAll('button[id^="tab-"]').forEach(btn => btn.classList.remove('active-tab'));
-  document.getElementById(`tab-${tab}`).classList.add('active-tab');
+  document.getElementById('tab-all').classList.remove('active-tab');
+  document.getElementById('tab-interview').classList.remove('active-tab');
+  document.getElementById('tab-rejected').classList.remove('active-tab');
+  document.getElementById('tab-' + tab).classList.add('active-tab');
 
-  document.querySelectorAll('.job-card').forEach(card => {
+
+  const cards = document.querySelectorAll('.job-card');
+
+  cards.forEach(function (card) {
+
     const status = card.getAttribute('data-status');
-    card.style.display = (tab === 'all' || status === tab) ? 'block' : 'none';
+
+    if (tab === 'all') {
+      card.style.display = 'block';
+    }
+    else if (status === tab) {
+      card.style.display = 'block';
+    }
+    else {
+      card.style.display = 'none';
+    }
   });
+
   updateCounts();
 }
 
 function changeStatus(id, newStatus) {
+
   const card = document.getElementById(id);
   const oldStatus = card.getAttribute('data-status');
 
-  const finalStatus = (oldStatus === newStatus) ? 'none' : newStatus;
+  let finalStatus;
+  if (oldStatus === newStatus) {
+    finalStatus = 'none';
+  } else {
+    finalStatus = newStatus;
+  }
 
   if (finalStatus !== 'none') {
     console.log("Clicked: " + finalStatus.toUpperCase());
@@ -58,23 +90,43 @@ function changeStatus(id, newStatus) {
   }
 
   card.setAttribute('data-status', finalStatus);
+
   const label = card.querySelector('.status-badge');
-  label.innerText = finalStatus === 'none' ? 'NOT APPLIED' : finalStatus.toUpperCase();
+  if (finalStatus === 'none') {
+    label.innerText = 'NOT APPLIED';
+  } else if (finalStatus === 'interview') {
+    label.innerText = 'INTERVIEW';
+  } else if (finalStatus === 'rejected') {
+    label.innerText = 'REJECTED';
+  }
 
-  card.querySelector('.btn-int').classList.toggle('active-green', finalStatus === 'interview');
-  card.querySelector('.btn-rej').classList.toggle('active-red', finalStatus === 'rejected');
+  const interviewBtn = card.querySelector('.btn-int');
+  const rejectedBtn = card.querySelector('.btn-rej');
 
-  card.classList.remove('border-interview', 'border-rejected');
+  interviewBtn.classList.remove('active-green');
+  rejectedBtn.classList.remove('active-red');
+
+  if (finalStatus === 'interview') {
+    interviewBtn.classList.add('active-green');
+  }
+  if (finalStatus === 'rejected') {
+    rejectedBtn.classList.add('active-red');
+  }
+
+  card.classList.remove('border-interview');
+  card.classList.remove('border-rejected');
+
   if (finalStatus === 'interview') {
     card.classList.add('border-interview');
-  } else if (finalStatus === 'rejected') {
+  }
+  if (finalStatus === 'rejected') {
     card.classList.add('border-rejected');
   }
 
   newTab(currentTab);
 }
 
-// Delete function
+
 function removeJob(id) {
   const confirmDelete = confirm("Delete this application?");
 
