@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Application Tracker</title>
+
   <!-- Google fonts  -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,6 +57,7 @@
     .job-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+      border-color: #e5e7eb;
     }
 
     .active-green {
@@ -70,7 +72,7 @@
       border-color: #ef4444 !important;
     }
 
-    .removing {
+    .delete-btn {
       opacity: 0;
       transform: scale(0.9) translateY(-10px);
       pointer-events: none;
@@ -93,19 +95,23 @@
 <body class="p-5 md:p-10">
 
   <div class="max-w-6xl mx-auto">
+    <!-- head section  -->
     <h1 class="text-[32px] font-bold mb-7">Job Application Tracker</h1>
 
     <div class="grid grid-cols-3 md:grid-cols-3 gap-6 mb-12 sticky top-0 z-10 bg-[#f8fafc] pt-3">
+
       <div
         class="bg-white p-5 rounded-lg border border-white shadow-sm hover:-translate-y-1 hover:shadow-md transition cursor-pointer">
         <p class="text-gray-500 font-medium text-sm">Total</p>
         <p id="totalCount" class="text-3xl font-bold mt-2">8</p>
       </div>
+
       <div
         class="bg-white p-5 rounded-lg border-l-4 border-[#10b981] shadow-sm hover:-translate-y-1 hover:shadow-md transition cursor-pointer">
         <p class="text-gray-500 font-medium text-sm">Interview</p>
         <p id="interviewCount" class="text-3xl font-bold text-[#10b981] mt-2">0</p>
       </div>
+
       <div
         class="bg-white p-5 rounded-lg border-l-4 border-[#ef4444] shadow-sm hover:-translate-y-1 hover:shadow-md transition cursor-pointer">
         <p class="text-gray-500 font-medium text-sm">Rejected</p>
@@ -120,15 +126,17 @@
       <span id="badgeCount" class="text-gray-400 font-medium text-[16px]">8 jobs</span>
     </div>
 
+    <!-- tab switch -->
     <div class="flex gap-2 mb-8">
-      <button onclick="setTab('all')" id="tab-all"
+      <button onclick="newTab('all')" id="tab-all"
         class="px-8 py-2 rounded-md bg-white border-none text-sm font-semibold active-tab cursor-pointer">All</button>
-      <button onclick="setTab('interview')" id="tab-interview"
+      <button onclick="newTab('interview')" id="tab-interview"
         class="px-8 py-2 rounded-md bg-white border-none text-sm font-semibold text-gray-500 cursor-pointer">Interview</button>
-      <button onclick="setTab('rejected')" id="tab-rejected"
+      <button onclick="newTab('rejected')" id="tab-rejected"
         class="px-8 py-2 rounded-md bg-white border-none text-sm font-semibold text-gray-500 cursor-pointer">Rejected</button>
     </div>
 
+    <!-- Job cards section   -->
     <div id="jobList" class="space-y-7">
       <div class="job-card bg-white p-6 rounded-xl border border-white shadow-sm relative" id="job-1">
         <button onclick="removeJob('job-1')"
@@ -292,7 +300,8 @@
       </div>
     </div>
 
-    <div id="emptyView"
+    <!-- No data section  -->
+    <div id="no-data"
       class="hidden flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-gray-100">
       <img src="./jobs.png" alt="" class="w-20 mb-4">
       <h3 class="text-2xl font-bold">No jobs available</h3>
@@ -300,101 +309,7 @@
     </div>
   </div>
 
-  <script>
-    let currentTab = 'all';
-
-    window.onload = function () {
-      console.log("Welcome! Your Job Tracker is ready.");
-      updateCounts();
-    };
-
-    function updateCounts() {
-      const allCards = document.querySelectorAll('.job-card');
-      const interviewCount = document.querySelectorAll('.job-card[data-status="interview"]').length;
-      const rejectedCount = document.querySelectorAll('.job-card[data-status="rejected"]').length;
-
-      document.getElementById('totalCount').innerText = allCards.length;
-      document.getElementById('interviewCount').innerText = interviewCount;
-      document.getElementById('rejectedCount').innerText = rejectedCount;
-
-      let visibleCount = 0;
-      allCards.forEach(card => { if (window.getComputedStyle(card).display !== 'none') visibleCount++; });
-      document.getElementById('badgeCount').innerText = `${visibleCount} jobs`;
-
-      console.log("Stats update: Total=" + allCards.length + ", Interview=" + interviewCount + ", Rejected=" + rejectedCount);
-
-      const empty = document.getElementById('emptyView');
-      const list = document.getElementById('jobList');
-      if (visibleCount === 0) {
-        empty.classList.remove('hidden');
-        list.classList.add('hidden');
-      } else {
-        empty.classList.add('hidden');
-        list.classList.remove('hidden');
-      }
-    }
-
-    function setTab(tab) {
-      currentTab = tab;
-      console.log("Current Tab: " + tab.toUpperCase());
-
-      document.querySelectorAll('button[id^="tab-"]').forEach(btn => btn.classList.remove('active-tab'));
-      document.getElementById(`tab-${tab}`).classList.add('active-tab');
-
-      document.querySelectorAll('.job-card').forEach(card => {
-        const status = card.getAttribute('data-status');
-        card.style.display = (tab === 'all' || status === tab) ? 'block' : 'none';
-      });
-      updateCounts();
-    }
-
-    function changeStatus(id, newStatus) {
-      const card = document.getElementById(id);
-      const oldStatus = card.getAttribute('data-status');
-
-      const finalStatus = (oldStatus === newStatus) ? 'none' : newStatus;
-
-      if (finalStatus !== 'none') {
-        console.log("Clicked: " + finalStatus.toUpperCase());
-      } else {
-        console.log("Status Reset for: " + id);
-      }
-
-      card.setAttribute('data-status', finalStatus);
-      const label = card.querySelector('.status-badge');
-      label.innerText = finalStatus === 'none' ? 'NOT APPLIED' : finalStatus.toUpperCase();
-
-      card.querySelector('.btn-int').classList.toggle('active-green', finalStatus === 'interview');
-      card.querySelector('.btn-rej').classList.toggle('active-red', finalStatus === 'rejected');
-
-      card.classList.remove('border-interview', 'border-rejected');
-      if (finalStatus === 'interview') {
-        card.classList.add('border-interview');
-      } else if (finalStatus === 'rejected') {
-        card.classList.add('border-rejected');
-      }
-
-      setTab(currentTab);
-    }
-
-    function removeJob(id) {
-      const confirmDelete = confirm("Are you sure you want to delete this job?");
-
-      if (confirmDelete) {
-        const card = document.getElementById(id);
-        console.log("Delete: " + id);
-
-        card.classList.add('removing');
-        setTimeout(() => {
-          card.remove();
-          updateCounts();
-          console.log(id + " has been permanently removed.");
-        }, 300);
-      } else {
-        console.log("Cancelled by user.");
-      }
-    }
-  </script>
+  <script src="./script.js"></script>
 </body>
 
 </html>
