@@ -14,8 +14,12 @@ Ans: To add a new element firstly I use document.createElement('tagName') to cre
 
 Ans: Event Bubbling is a way how events move into DOM.When you click an element like a button that is inside a div, the click event first triggers on the button, then it "bubbles up" to its parent (the div), and then to the body, and finally to the root.It like a bubble rising from the bottom of the water to the top.
 
+
 4.What is Event Delegation in JavaScript? Why is it useful?
-Event Delegation is a smart technique where instead of adding event listeners to every single child element, we just add one listener to their parent. Because of "Event Bubbling," the parent can catch the events from its children. It is super useful because it saves memory and if we add new items dynamically (like adding a new job card), we don't need to add new listeners for them.
+
+Ans: Event Delegation is a smart technique where instead of adding event listeners to every single child element, we just add one listener to their parent. Because of "Event Bubbling," the parent can catch the events from its children. It is super useful because it saves memory and if we add new items dynamically (like adding a new job card), we don't need to add new listeners for them.
+
 
 5.What is the difference between preventDefault() and stopPropagation() methods?
-These two are different. preventDefault() stops the default action that the browser usually does (like stopping a link from opening a new page or stopping a form from refreshing). But stopPropagation() stops the event from bubbling up to its parents. So, one stops the browser's behavior, and the other stops the event from traveling further up the DOM tree.
+
+Ans: These two are different. preventDefault() stops the default action that the browser usually does (like stopping a link from opening a new page or stopping a form from refreshing). But stopPropagation() stops the event from bubbling up to its parents. So, one stops the browser's behavior, and the other stops the event from traveling further up the DOM tree.
